@@ -1,6 +1,6 @@
 import { Draggable } from "@hello-pangea/dnd";
 import type { ChatSummary } from "@/types/chat";
-import { formatTimeShort } from "@/components/domain/chat/format";
+import { formatTime } from "@/components/domain/chat/format";
 
 interface Props {
   chat: ChatSummary;
@@ -8,7 +8,7 @@ interface Props {
 }
 
 export const KanbanCardItem = ({ chat, index }: Props) => {
-  const formattedDate = chat.lastTs ? formatTimeShort(chat.lastTs) : "";
+  const formattedDate = chat.lastTs ? formatTime(chat.lastTs) : "";
 
   return (
     <Draggable draggableId={chat.chatJid} index={index}>
