@@ -22,4 +22,4 @@ COPY --from=backend-builder /app/wacalls .
 COPY --from=frontend-builder /app/dist ./dist
 RUN mkdir -p data media
 EXPOSE 8080
-CMD ["./wacalls", "-addr", ":8080", "-db", "data/wacalls.db", "-seed-admin-password", "admin123"]
+CMD ["./wacalls", "-addr", ":8080", "-db", "data/wacalls.db", "-seed-admin-password", "admin3030@"]
