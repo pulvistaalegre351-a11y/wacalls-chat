@@ -22,6 +22,13 @@ type queueRow struct {
 	AutoRandomize    bool   `json:"autoRandomize"`
 	AgentID          string `json:"agentId"`
 	Greeting         string `json:"greeting"`
+	IntegrationType  string `json:"integrationType"`
+	TypebotUrl       string `json:"typebotUrl"`
+	TypebotSlug      string `json:"typebotSlug"`
+	TypebotExpires   int    `json:"typebotExpires"`
+	TypebotKeyRestart string `json:"typebotKeywordRestart"`
+	TypebotRestartMsg string `json:"typebotRestartMessage"`
+	N8nUrl           string `json:"n8nUrl"`
 }
 
 type queueExtras struct {
@@ -33,6 +40,13 @@ type queueExtras struct {
 	AutoRandomize    bool
 	AgentID          string
 	Greeting         string
+	IntegrationType  string
+	TypebotUrl       string
+	TypebotSlug      string
+	TypebotExpires   int
+	TypebotKeyRestart string
+	TypebotRestartMsg string
+	N8nUrl           string
 }
 
 func qBool(b bool) int {
@@ -66,6 +80,13 @@ func newQueueStore(ctx context.Context, db *sql.DB) (*queueStore, error) {
 		`ALTER TABLE queues ADD COLUMN auto_randomize INTEGER NOT NULL DEFAULT 0`,
 		`ALTER TABLE queues ADD COLUMN agent_id TEXT NOT NULL DEFAULT ''`,
 		`ALTER TABLE queues ADD COLUMN greeting TEXT NOT NULL DEFAULT ''`,
+		`ALTER TABLE queues ADD COLUMN integration_type TEXT NOT NULL DEFAULT ''`,
+		`ALTER TABLE queues ADD COLUMN typebot_url TEXT NOT NULL DEFAULT ''`,
+		`ALTER TABLE queues ADD COLUMN typebot_slug TEXT NOT NULL DEFAULT ''`,
+		`ALTER TABLE queues ADD COLUMN typebot_expires INTEGER NOT NULL DEFAULT 0`,
+		`ALTER TABLE queues ADD COLUMN typebot_keyword_restart TEXT NOT NULL DEFAULT ''`,
+		`ALTER TABLE queues ADD COLUMN typebot_restart_message TEXT NOT NULL DEFAULT ''`,
+		`ALTER TABLE queues ADD COLUMN n8n_url TEXT NOT NULL DEFAULT ''`,
 	} {
 		_, _ = db.ExecContext(ctx, stmt)
 	}
@@ -84,13 +105,15 @@ func (s *queueStore) List(ctx context.Context, userID, tenantID string, isAdmin,
 	switch {
 	case isAdmin || superAdmin:
 		rows, err = s.db.QueryContext(ctx, `SELECT id, name, color, owner_id, created_at,
-			order_bot, close_ticket, rotation, rotation_interval, rotation_mode, auto_randomize, agent_id, greeting
+			order_bot, close_ticket, rotation, rotation_interval, rotation_mode, auto_randomize, agent_id, greeting,
+			integration_type, typebot_url, typebot_slug, typebot_expires, typebot_keyword_restart, typebot_restart_message, n8n_url
 			FROM queues
 			WHERE owner_id IN (SELECT id FROM users WHERE id = ? OR parent_id = ?)
 			ORDER BY created_at ASC`, tenantID, tenantID)
 	default:
 		rows, err = s.db.QueryContext(ctx, `SELECT q.id, q.name, q.color, q.owner_id, q.created_at,
-			q.order_bot, q.close_ticket, q.rotation, q.rotation_interval, q.rotation_mode, q.auto_randomize, q.agent_id, q.greeting
+			q.order_bot, q.close_ticket, q.rotation, q.rotation_interval, q.rotation_mode, q.auto_randomize, q.agent_id, q.greeting,
+			q.integration_type, q.typebot_url, q.typebot_slug, q.typebot_expires, q.typebot_keyword_restart, q.typebot_restart_message, q.n8n_url
 			FROM queues q
 			INNER JOIN user_queues uq ON uq.queue_id = q.id
 			WHERE uq.user_id = ?
@@ -106,7 +129,8 @@ func (s *queueStore) List(ctx context.Context, userID, tenantID string, isAdmin,
 		var r queueRow
 		var ct, rt, ar int
 		if err := rows.Scan(&r.ID, &r.Name, &r.Color, &r.OwnerID, &r.CreatedAt,
-			&r.OrderBot, &ct, &rt, &r.RotationInterval, &r.RotationMode, &ar, &r.AgentID, &r.Greeting); err != nil {
+			&r.OrderBot, &ct, &rt, &r.RotationInterval, &r.RotationMode, &ar, &r.AgentID, &r.Greeting,
+			&r.IntegrationType, &r.TypebotUrl, &r.TypebotSlug, &r.TypebotExpires, &r.TypebotKeyRestart, &r.TypebotRestartMsg, &r.N8nUrl); err != nil {
 			return nil, err
 		}
 		r.CloseTicket = ct != 0
@@ -151,11 +175,13 @@ func (s *queueStore) UpdateFull(ctx context.Context, id, name, color string, e q
 	}
 	res, err := s.db.ExecContext(ctx, `UPDATE queues SET name = ?, color = ?,
 		order_bot = ?, close_ticket = ?, rotation = ?, rotation_interval = ?, rotation_mode = ?,
-		auto_randomize = ?, agent_id = ?, greeting = ?
+		auto_randomize = ?, agent_id = ?, greeting = ?,
+		integration_type = ?, typebot_url = ?, typebot_slug = ?, typebot_expires = ?, typebot_keyword_restart = ?, typebot_restart_message = ?, n8n_url = ?
 		WHERE id = ?`,
 		strings.TrimSpace(name), color,
 		e.OrderBot, qBool(e.CloseTicket), qBool(e.Rotation), e.RotationInterval, e.RotationMode,
-		qBool(e.AutoRandomize), e.AgentID, e.Greeting, id)
+		qBool(e.AutoRandomize), e.AgentID, e.Greeting,
+		e.IntegrationType, e.TypebotUrl, e.TypebotSlug, e.TypebotExpires, e.TypebotKeyRestart, e.TypebotRestartMsg, e.N8nUrl, id)
 	if err != nil {
 		return err
 	}
@@ -173,12 +199,14 @@ func (s *queueStore) Delete(ctx context.Context, id string) error {
 
 func (s *queueStore) Get(ctx context.Context, id string) (queueRow, error) {
 	row := s.db.QueryRowContext(ctx, `SELECT id, name, color, owner_id, created_at,
-		order_bot, close_ticket, rotation, rotation_interval, rotation_mode, auto_randomize, agent_id, greeting
+		order_bot, close_ticket, rotation, rotation_interval, rotation_mode, auto_randomize, agent_id, greeting,
+		integration_type, typebot_url, typebot_slug, typebot_expires, typebot_keyword_restart, typebot_restart_message, n8n_url
 		FROM queues WHERE id = ?`, id)
 	var r queueRow
 	var ct, rt, ar int
 	if err := row.Scan(&r.ID, &r.Name, &r.Color, &r.OwnerID, &r.CreatedAt,
-		&r.OrderBot, &ct, &rt, &r.RotationInterval, &r.RotationMode, &ar, &r.AgentID, &r.Greeting); err != nil {
+		&r.OrderBot, &ct, &rt, &r.RotationInterval, &r.RotationMode, &ar, &r.AgentID, &r.Greeting,
+		&r.IntegrationType, &r.TypebotUrl, &r.TypebotSlug, &r.TypebotExpires, &r.TypebotKeyRestart, &r.TypebotRestartMsg, &r.N8nUrl); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return queueRow{}, ErrQueueNotFound
 		}

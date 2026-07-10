@@ -12,4 +12,11 @@ export type Queue = {
   autoRandomize?: boolean;
   agentId?: string;
   greeting?: string;
+  integrationType?: string;
+  typebotUrl?: string;
+  typebotSlug?: string;
+  typebotExpires?: number;
+  typebotKeywordRestart?: string;
+  typebotRestartMessage?: string;
+  n8nUrl?: string;
 };

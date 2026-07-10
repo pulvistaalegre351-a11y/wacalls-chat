@@ -75,6 +75,13 @@ func (s *server) handleQueueUpdate(w http.ResponseWriter, r *http.Request) {
 		AutoRandomize:    existing.AutoRandomize,
 		AgentID:          existing.AgentID,
 		Greeting:         existing.Greeting,
+		IntegrationType:  existing.IntegrationType,
+		TypebotUrl:       existing.TypebotUrl,
+		TypebotSlug:      existing.TypebotSlug,
+		TypebotExpires:   existing.TypebotExpires,
+		TypebotKeyRestart: existing.TypebotKeyRestart,
+		TypebotRestartMsg: existing.TypebotRestartMsg,
+		N8nUrl:           existing.N8nUrl,
 	}
 	_ = mergeStr(raw, "name", &name)
 	_ = mergeStr(raw, "color", &color)
@@ -86,6 +93,13 @@ func (s *server) handleQueueUpdate(w http.ResponseWriter, r *http.Request) {
 	_ = mergeBool(raw, "autoRandomize", &extras.AutoRandomize)
 	_ = mergeStr(raw, "agentId", &extras.AgentID)
 	_ = mergeStr(raw, "greeting", &extras.Greeting)
+	_ = mergeStr(raw, "integrationType", &extras.IntegrationType)
+	_ = mergeStr(raw, "typebotUrl", &extras.TypebotUrl)
+	_ = mergeStr(raw, "typebotSlug", &extras.TypebotSlug)
+	_ = mergeInt(raw, "typebotExpires", &extras.TypebotExpires)
+	_ = mergeStr(raw, "typebotKeywordRestart", &extras.TypebotKeyRestart)
+	_ = mergeStr(raw, "typebotRestartMessage", &extras.TypebotRestartMsg)
+	_ = mergeStr(raw, "n8nUrl", &extras.N8nUrl)
 	if err := s.queues.UpdateFull(r.Context(), id, name, color, extras); err != nil {
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
@@ -94,6 +108,13 @@ func (s *server) handleQueueUpdate(w http.ResponseWriter, r *http.Request) {
 }
 
 func mergeStr(raw map[string]json.RawMessage, key string, dst *string) error {
+	if v, ok := raw[key]; ok {
+		return json.Unmarshal(v, dst)
+	}
+	return nil
+}
+
+func mergeInt(raw map[string]json.RawMessage, key string, dst *int) error {
 	if v, ok := raw[key]; ok {
 		return json.Unmarshal(v, dst)
 	}
