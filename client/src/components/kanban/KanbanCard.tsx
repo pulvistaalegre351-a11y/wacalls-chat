@@ -3,8 +3,10 @@ import type { ChatSummary } from "@/types/chat";
 import { formatTime } from "@/components/domain/chat/format";
 import { MessageSquare, PhoneCall } from "lucide-react";
 import { setActiveChat } from "@/stores/chats";
+import { resolveLidPhone } from "@/services/chats";
 import { useDialerUI } from "@/stores/dialerUI";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface Props {
   chat: ChatSummary;
@@ -24,10 +26,24 @@ export const KanbanCardItem = ({ chat, index, sessionId }: Props) => {
     navigate("/chats");
   };
 
-  const handleCall = (e: React.MouseEvent) => {
+  const handleCall = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const phone = chat.chatJid.split("@")[0];
-    openDialer(phone);
+    
+    if (chat.chatJid.endsWith("@lid")) {
+      try {
+        const resolved = await resolveLidPhone(sessionId, chat.chatJid);
+        if (resolved && resolved.phone) {
+          openDialer(resolved.phone);
+        } else {
+          toast.error("Não foi possível descobrir o número oculto deste contato.");
+        }
+      } catch (err) {
+        toast.error("Erro ao resolver o número oculto.");
+      }
+    } else {
+      const phone = chat.chatJid.split("@")[0];
+      openDialer(phone);
+    }
   };
 
   return (
