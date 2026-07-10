@@ -1,21 +1,17 @@
 import { Draggable } from "@hello-pangea/dnd";
-import { type KanbanCard } from "@/stores/kanban";
+import type { ChatSummary } from "@/types/chat";
+import { formatTimeShort } from "@/components/domain/chat/format";
 
 interface Props {
-  card: KanbanCard;
+  chat: ChatSummary;
   index: number;
 }
 
-export const KanbanCardItem = ({ card, index }: Props) => {
-  const formattedDate = new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit"
-  }).format(new Date(card.createdAt));
+export const KanbanCardItem = ({ chat, index }: Props) => {
+  const formattedDate = chat.lastTs ? formatTimeShort(chat.lastTs) : "";
 
   return (
-    <Draggable draggableId={card.id} index={index}>
+    <Draggable draggableId={chat.chatJid} index={index}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
@@ -26,33 +22,38 @@ export const KanbanCardItem = ({ card, index }: Props) => {
           }`}
           style={provided.draggableProps.style}
         >
-          <div className="font-semibold text-sm leading-tight text-foreground">
-            {card.title}
+          <div className="flex items-center gap-2">
+            {chat.avatarUrl ? (
+              <img src={chat.avatarUrl} alt="" className="h-6 w-6 rounded-full object-cover shrink-0" />
+            ) : (
+              <div className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary/10 text-[10px] font-semibold text-primary uppercase">
+                {(chat.name || "C").charAt(0)}
+              </div>
+            )}
+            <div className="font-semibold text-sm leading-tight text-foreground truncate">
+              {chat.name || chat.chatJid.split("@")[0]}
+            </div>
           </div>
-          {card.description && (
-            <div className="text-xs text-muted-foreground line-clamp-2">
-              {card.description}
+          
+          {chat.lastMessage && (
+            <div className="text-xs text-muted-foreground line-clamp-2 mt-1">
+              {chat.lastMessage}
             </div>
           )}
           
-          {(card.tags?.length || card.createdAt) && (
-            <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-              <div className="flex gap-1">
-                {card.tags?.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              
-              <div className="text-[10px] text-muted-foreground/80">
-                {formattedDate}
-              </div>
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <div className="flex gap-1">
+              {chat.unread > 0 && (
+                <span className="rounded-full bg-green-500/10 px-1.5 py-0.5 text-[10px] font-medium text-green-600">
+                  {chat.unread} nova{chat.unread > 1 ? "s" : ""}
+                </span>
+              )}
             </div>
-          )}
+            
+            <div className="text-[10px] text-muted-foreground/80">
+              {formattedDate}
+            </div>
+          </div>
         </div>
       )}
     </Draggable>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import { ArrowDownNarrowWide, ArrowUpNarrowWide, CheckCheck, Eye, Filter, ListFilter, MoreVertical, Plus, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -30,6 +30,8 @@ import {
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { closeChat } from "@/services/chats";
 import { NewChatDialog } from "@/components/domain/chat/NewChatDialog";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { KanbanBoard } from "@/components/kanban/KanbanBoard";
 
 type Tab = "open" | "waiting" | "group";
 
@@ -44,6 +46,9 @@ export const ChatsPage = () => {
   const activeId = useSessions((s) => s.activeId);
   const [pickedSession, setPickedSession] = useState<string | null>(activeId);
   const [searchParams, setSearchParams] = useSearchParams();
+  const loc = useLocation();
+  const navigate = useNavigate();
+  const isKanban = loc.pathname === "/kanban";
 
   // Hidrata pickedSession quando a store de sessões resolve depois do primeiro
   // render (acontece em F5: na primeira renderização activeId ainda é null e
@@ -373,6 +378,19 @@ export const ChatsPage = () => {
           setTab("waiting");
         }}
       />
+      <Sheet open={isKanban} onOpenChange={(open) => {
+        if (!open) navigate("/chats");
+      }}>
+        <SheetContent side="right" className="w-full sm:max-w-none sm:w-[600px] lg:w-[900px] xl:w-[1100px] p-0 flex flex-col bg-muted/30">
+          <SheetTitle className="sr-only">Kanban Pipeline</SheetTitle>
+          <div className="flex h-16 shrink-0 items-center border-b bg-background/80 px-6 backdrop-blur">
+            <h2 className="text-lg font-semibold tracking-tight">Pipeline Kanban</h2>
+          </div>
+          <div className="flex-1 overflow-hidden">
+            <KanbanBoard chats={chats} />
+          </div>
+        </SheetContent>
+      </Sheet>
     </AppShell>
   );
 };
