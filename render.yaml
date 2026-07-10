@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: wacalls-chat
+    env: docker
+    plan: free 
+    healthCheckPath: /
