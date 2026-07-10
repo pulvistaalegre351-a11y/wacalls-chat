@@ -9,6 +9,8 @@ import { ConnectionsPage } from "@/pages/ConnectionsPage";
 import ReportsPage from "@/pages/ReportsPage";
 import ContactsPage from "@/pages/ContactsPage";
 import QueuesPage from "@/pages/QueuesPage";
+import FlowBuilderListPage from "@/pages/FlowBuilderListPage";
+import FlowBuilderEditorPage from "@/pages/FlowBuilderEditorPage";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -43,6 +45,8 @@ const Root = () => {
               <Route path="/contacts" element={<RequireAuth><ContactsPage /></RequireAuth>} />
               <Route path="/queues" element={<RequireAuth><QueuesPage /></RequireAuth>} />
               <Route path="/kanban" element={<RequireAuth><ChatsPage /></RequireAuth>} />
+              <Route path="/flows" element={<RequireAuth><FlowBuilderListPage /></RequireAuth>} />
+              <Route path="/flows/:id" element={<RequireAuth><FlowBuilderEditorPage /></RequireAuth>} />
               <Route path="/admin/users" element={<RequireAuth adminOnly><AdminUsersPage /></RequireAuth>} />
               <Route path="*" element={<Navigate to="/chats" replace />} />
             </Routes>
