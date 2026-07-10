@@ -12,7 +12,6 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-COPY --from=frontend-builder /app/client/dist ./client/dist
 RUN CGO_ENABLED=0 GOOS=linux go build -o wacalls ./cmd/server
 
 # Etapa 3: Imagem Final Leve
@@ -20,7 +19,8 @@ FROM alpine:latest
 WORKDIR /app
 RUN apk --no-cache add ca-certificates tzdata
 COPY --from=backend-builder /app/wacalls .
-COPY --from=frontend-builder /app/client/dist ./client/dist
+# Aqui foi corrigido o caminho do frontend (dist em vez de client/dist)
+COPY --from=frontend-builder /app/dist ./dist
 RUN mkdir -p data media
 EXPOSE 8080
 CMD ["./wacalls", "-addr", ":8080", "-db", "data/wacalls.db"]
