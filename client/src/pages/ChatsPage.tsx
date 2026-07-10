@@ -387,7 +387,7 @@ export const ChatsPage = () => {
             <h2 className="text-lg font-semibold tracking-tight">Pipeline Kanban</h2>
           </div>
           <div className="flex-1 overflow-hidden">
-            <KanbanBoard chats={chats} />
+            <KanbanBoard chats={chats} sessionId={sessionId} />
           </div>
         </SheetContent>
       </Sheet>

@@ -6,9 +6,10 @@ import type { ChatSummary } from "@/types/chat";
 
 interface Props {
   chats: ChatSummary[];
+  sessionId: string;
 }
 
-export const KanbanBoard = ({ chats }: Props) => {
+export const KanbanBoard = ({ chats, sessionId }: Props) => {
   const { columns, cardsByColumn, moveCard, registerChats } = useKanbanStore();
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export const KanbanBoard = ({ chats }: Props) => {
     <div className="flex h-full w-full gap-4 overflow-x-auto pb-4 p-4">
       <DragDropContext onDragEnd={onDragEnd}>
         {columns.map((col) => (
-          <KanbanColumnList key={col.id} column={col} chats={chatsByCol[col.id] || []} />
+          <KanbanColumnList key={col.id} column={col} chats={chatsByCol[col.id] || []} sessionId={sessionId} />
         ))}
       </DragDropContext>
     </div>

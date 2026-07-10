@@ -6,9 +6,10 @@ import { KanbanCardItem } from "./KanbanCard";
 interface Props {
   column: KanbanColumnDef;
   chats: ChatSummary[];
+  sessionId: string;
 }
 
-export const KanbanColumnList = ({ column, chats }: Props) => {
+export const KanbanColumnList = ({ column, chats, sessionId }: Props) => {
   return (
     <div className="flex h-full min-w-[280px] max-w-[280px] flex-col rounded-xl border bg-muted/40">
       <div className="flex items-center justify-between p-3 border-b bg-muted/60 rounded-t-xl">
@@ -28,7 +29,7 @@ export const KanbanColumnList = ({ column, chats }: Props) => {
             }`}
           >
             {chats.map((chat, index) => (
-              <KanbanCardItem key={chat.chatJid} chat={chat} index={index} />
+              <KanbanCardItem key={chat.chatJid} chat={chat} index={index} sessionId={sessionId} />
             ))}
             {provided.placeholder}
           </div>

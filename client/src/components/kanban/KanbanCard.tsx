@@ -1,14 +1,34 @@
 import { Draggable } from "@hello-pangea/dnd";
 import type { ChatSummary } from "@/types/chat";
 import { formatTime } from "@/components/domain/chat/format";
+import { MessageSquare, PhoneCall } from "lucide-react";
+import { setActiveChat } from "@/stores/chats";
+import { useDialerUI } from "@/stores/dialerUI";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   chat: ChatSummary;
   index: number;
+  sessionId: string;
 }
 
-export const KanbanCardItem = ({ chat, index }: Props) => {
+export const KanbanCardItem = ({ chat, index, sessionId }: Props) => {
   const formattedDate = chat.lastTs ? formatTime(chat.lastTs) : "";
+
+  const navigate = useNavigate();
+  const openDialer = useDialerUI((s) => s.openDialer);
+
+  const handleOpenChat = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveChat(sessionId, chat.chatJid);
+    navigate("/chats");
+  };
+
+  const handleCall = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const phone = chat.chatJid.split("@")[0];
+    openDialer(phone);
+  };
 
   return (
     <Draggable draggableId={chat.chatJid} index={index}>
@@ -42,10 +62,26 @@ export const KanbanCardItem = ({ chat, index }: Props) => {
           )}
           
           <div className="mt-2 flex items-center justify-between gap-2">
-            <div className="flex gap-1">
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleOpenChat}
+                className="grid h-6 w-6 place-items-center rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                title="Abrir Conversa"
+              >
+                <MessageSquare className="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={handleCall}
+                className="grid h-6 w-6 place-items-center rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                title="Ligar"
+              >
+                <PhoneCall className="h-3.5 w-3.5" />
+              </button>
               {chat.unread > 0 && (
-                <span className="rounded-full bg-green-500/10 px-1.5 py-0.5 text-[10px] font-medium text-green-600">
-                  {chat.unread} nova{chat.unread > 1 ? "s" : ""}
+                <span className="rounded-full bg-green-500/10 px-1.5 py-0.5 text-[10px] font-medium text-green-600 flex items-center">
+                  {chat.unread}
                 </span>
               )}
             </div>
