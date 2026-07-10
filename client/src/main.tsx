@@ -9,6 +9,7 @@ import { ConnectionsPage } from "@/pages/ConnectionsPage";
 import ReportsPage from "@/pages/ReportsPage";
 import ContactsPage from "@/pages/ContactsPage";
 import QueuesPage from "@/pages/QueuesPage";
+import { KanbanPage } from "@/pages/KanbanPage";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -42,6 +43,7 @@ const Root = () => {
               <Route path="/reports" element={<RequireAuth><ReportsPage /></RequireAuth>} />
               <Route path="/contacts" element={<RequireAuth><ContactsPage /></RequireAuth>} />
               <Route path="/queues" element={<RequireAuth><QueuesPage /></RequireAuth>} />
+              <Route path="/kanban" element={<RequireAuth><KanbanPage /></RequireAuth>} />
               <Route path="/admin/users" element={<RequireAuth adminOnly><AdminUsersPage /></RequireAuth>} />
               <Route path="*" element={<Navigate to="/chats" replace />} />
             </Routes>

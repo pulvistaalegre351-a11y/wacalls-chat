@@ -104,7 +104,7 @@ export const LoginPage = () => {
 
           <div className="relative z-10 flex items-center gap-2 text-xs opacity-80">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>Calls — Gratuito</span>
+            <span>Calls</span>
           </div>
         </aside>
 

@@ -124,6 +124,7 @@ const AppShellInner = ({ children }: { children: ReactNode }) => {
   const campaignChildren: (NavItem & { feat?: string })[] = [];
   const principal: (NavItem & { perm: Permission; feat?: string })[] = [
     { to: "/chats", icon: MessageSquare, label: t("nav.chats", { defaultValue: "Chat" }), badge: unreadTotal, perm: "chats" },
+    { to: "/kanban", icon: KanbanSquare, label: t("nav.kanban", { defaultValue: "Kanban" }), perm: "chats" },
     { to: "/contacts", icon: Contact2, label: t("nav.contacts", { defaultValue: "Contatos" }), perm: "chats" },
     { to: "/queues", icon: Users2, label: t("nav.queues", { defaultValue: "Filas" }), perm: "chats" },
     { to: "/connections", icon: Wifi, label: t("nav.connections", { defaultValue: "Conexões" }), perm: "connections" },
