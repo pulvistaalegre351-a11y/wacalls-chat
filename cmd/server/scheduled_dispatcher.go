@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/types"
+	"google.golang.org/protobuf/proto"
 )
 
 type ScheduledDispatcher struct {
@@ -67,7 +69,7 @@ func (d *ScheduledDispatcher) sendMsg(msg ScheduledMessage) error {
 
 	chatJID := types.NewJID(peer.User, peer.Server)
 	
-	waMsg := d.srv.messages.buildWhatsAppTextMessage(msg.Message, nil)
+	waMsg := &waE2E.Message{Conversation: proto.String(msg.Message)}
 	
 	resp, err := sess.client.SendMessage(d.ctx, chatJID, waMsg)
 	if err != nil {
@@ -75,20 +77,21 @@ func (d *ScheduledDispatcher) sendMsg(msg ScheduledMessage) error {
 	}
 
 	// Persist to messageStore so it appears in the chat history:
-	dbMsg := ChatMessage{
+	dbMsg := MessageRow{
 		ID:        resp.ID,
 		SessionID: sess.id,
-		OwnerID:   sess.ownerID,
 		ChatJID:   chatJID.String(),
 		FromMe:    true,
-		SenderJID: sess.client.Store.ID.String(),
-		SenderName: "",
+		SenderJID: jidOrEmpty(sess),
 		Kind:      "text",
 		Body:      msg.Message,
-		Timestamp: resp.Timestamp.UnixMilli(),
-		Status:    "PENDING",
+		Ts:        resp.Timestamp.UnixMilli(),
 	}
-	d.srv.messages.Upsert(d.ctx, dbMsg)
+	if dbMsg.Ts == 0 {
+		dbMsg.Ts = time.Now().UnixMilli()
+	}
+	_ = d.srv.messages.Insert(d.ctx, dbMsg)
+	d.srv.broker.emitMessage(dbMsg)
 
 	return nil
 }
