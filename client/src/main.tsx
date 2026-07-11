@@ -1,4 +1,4 @@
-import { StrictMode, Suspense, useEffect } from "react";
+import { StrictMode, Suspense, useEffect, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
