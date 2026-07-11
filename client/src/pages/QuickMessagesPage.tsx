@@ -85,14 +85,13 @@ export default function QuickMessagesPage() {
   };
 
   return (
-    <AppShell
-      title="Respostas Rápidas"
-      actions={
+    <AppShell>
+      <div className="flex items-center justify-between pb-6">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Respostas Rápidas</h1>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Nova Resposta
         </Button>
-      }
-    >
+      </div>
       <div className="space-y-4">
         {loading ? (
           <div className="flex h-32 items-center justify-center">

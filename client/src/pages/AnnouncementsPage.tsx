@@ -81,16 +81,16 @@ export default function AnnouncementsPage() {
   };
 
   return (
-    <AppShell
-      title="Mural de Avisos"
-      actions={
-        isAdmin && (
+    <AppShell>
+      <div className="flex items-center justify-between pb-6">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">Mural de Avisos</h1>
+        {isAdmin && (
           <Button onClick={() => setIsModalOpen(true)}>
             <Plus className="mr-2 h-4 w-4" /> Novo Aviso
           </Button>
-        )
-      }
-    >
+        )}
+      </div>
+
       <div className="space-y-4">
         {loading ? (
           <div className="flex h-32 items-center justify-center">
