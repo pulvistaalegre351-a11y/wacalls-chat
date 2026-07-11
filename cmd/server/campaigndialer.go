@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log/slog"
 	"time"
 )
 
@@ -92,8 +91,8 @@ func (d *campaignDialer) dialContact(c Campaign, contact CampaignContact) {
 		return
 	}
 
-	sess, err := d.srv.sessions.Get(c.SessionID)
-	if err != nil || sess == nil || !sess.IsReady() {
+	sess, ok := d.srv.sessions.Get(c.SessionID)
+	if !ok || sess == nil || sess.client == nil || !sess.client.IsConnected() {
 		// Session unavailable
 		d.srv.campaigns.UpdateContactStatus(d.ctx, contact.ID, "failed")
 		return
@@ -141,7 +140,7 @@ func (d *campaignDialer) dialContact(c Campaign, contact CampaignContact) {
 				d.srv.campaigns.UpdateContactStatus(d.ctx, contact.ID, "failed")
 				return
 			}
-			if rec.Status == StatusActive {
+			if rec.Status == StatusConnected {
 				// 3. Contact Answered!
 				d.srv.campaigns.UpdateContactStatus(d.ctx, contact.ID, "answered")
 
