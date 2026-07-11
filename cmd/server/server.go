@@ -224,8 +224,8 @@ func newServer(ctx context.Context, dbPath, staticDir string, maxCalls int, log 
 		kanban:     kanban,
 		sessStore:  store, chatMeta: chatMeta, calls: callStore, recSigner: signer, settings: settings, db: db, authStream: hub, cache: cch}
 	
-	srv.dialer = newCampaignDialer(srv)
-	srv.dialer.start()
+	// srv.dialer = newCampaignDialer(srv)
+	// srv.dialer.start()
 	
 	return srv, nil
 }
