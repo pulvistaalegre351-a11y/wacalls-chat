@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode, type ComponentType } from "react";
-import { BarChart3, ChevronDown, ChevronsLeft, ChevronsRight, Contact2, History, KanbanSquare, Layers, Maximize2, Megaphone, Menu as MenuIcon, MessageSquare, Minimize2, PhoneCall, Radio, Settings, ShoppingCart, Tag, Users2, Wifi, Workflow, Bot, Zap } from "lucide-react";
+import { BarChart3, ChevronDown, ChevronsLeft, ChevronsRight, Contact2, History, KanbanSquare, Layers, Maximize2, Megaphone, Menu as MenuIcon, MessageSquare, Minimize2, PhoneCall, Radio, Settings, ShoppingCart, Tag, Users2, Wifi, Workflow, Bot, Zap, CalendarClock } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { NotificationsMenu } from "./NotificationsMenu";
 import { UserMenu } from "./UserMenu";
@@ -130,6 +130,7 @@ const AppShellInner = ({ children }: { children: ReactNode }) => {
     { to: "/flows", icon: Bot, label: t("nav.flows", { defaultValue: "FlowBuilder" }), perm: "chats" },
     { to: "/quick-messages", icon: Zap, label: t("nav.quickMessages", { defaultValue: "Respostas Rápidas" }), perm: "chats" },
     { to: "/announcements", icon: Megaphone, label: t("nav.announcements", { defaultValue: "Mural de Avisos" }), perm: "chats" },
+    { to: "/scheduled-messages", icon: CalendarClock, label: t("nav.scheduled", { defaultValue: "Agendamentos" }), perm: "chats" },
     { to: "/connections", icon: Wifi, label: t("nav.connections", { defaultValue: "Conexões" }), perm: "connections" },
     { to: "/reports", icon: BarChart3, label: t("nav.reports", { defaultValue: "Relatórios" }), perm: "chats" },
   ];

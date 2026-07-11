@@ -33,12 +33,14 @@ type server struct {
 	campaigns     *campaignStore
 	quickMessages *quickMessageStore
 	announcements *announcementStore
+	scheduledMsgs *ScheduledMessageStore
 	dialer        *campaignDialer
 	recSigner  *recordingSigner
 	settings   *settingsStore
 	db         *sql.DB
 	authStream *authStreamHub
 	cache      cache.Cache
+	schedDispatcher *ScheduledDispatcher
 }
 
 func openDB(dbPath string) (*sql.DB, error) {
@@ -154,6 +156,10 @@ func newServer(ctx context.Context, dbPath, staticDir string, maxCalls int, log 
 	if err := anns.init(ctx); err != nil {
 		return nil, err
 	}
+	schedMsgs := NewScheduledMessageStore(db)
+	if err := schedMsgs.Init(ctx); err != nil {
+		return nil, err
+	}
 	tags, err := newTagStore(ctx, db)
 	if err != nil {
 		return nil, err
@@ -221,11 +227,14 @@ func newServer(ctx context.Context, dbPath, staticDir string, maxCalls int, log 
 		campaigns:  campaigns,
 		quickMessages: quickMsgs,
 		announcements: anns,
+		scheduledMsgs: schedMsgs,
 		kanban:     kanban,
 		sessStore:  store, chatMeta: chatMeta, calls: callStore, recSigner: signer, settings: settings, db: db, authStream: hub, cache: cch}
+	srv.dialer = newCampaignDialer(srv)
+	srv.dialer.start()
 	
-	// srv.dialer = newCampaignDialer(srv)
-	// srv.dialer.start()
+	srv.schedDispatcher = newScheduledDispatcher(srv)
+	srv.schedDispatcher.start(ctx)
 	
 	return srv, nil
 }
