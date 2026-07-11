@@ -31,6 +31,7 @@ export default function CampaignsPage() {
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [sessions, setSessions] = useState<SessionInfo[]>([]);
   const [flows, setFlows] = useState<Flow[]>([]);
   const [modalData, setModalData] = useState({
@@ -217,15 +218,14 @@ export default function CampaignsPage() {
                       </>
                     )}
                   </Button>
-                  <ConfirmDialog
-                    title="Remover campanha?"
-                    description="Todo o histórico de discagem desta campanha será perdido."
-                    onConfirm={() => handleDelete(c.id)}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-red-500 hover:text-red-600"
+                    onClick={() => setDeletingId(c.id)}
                   >
-                    <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </ConfirmDialog>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             ))}
@@ -310,6 +310,20 @@ export default function CampaignsPage() {
           </form>
         </DialogContent>
       </Dialog>
+      
+      <ConfirmDialog
+        open={!!deletingId}
+        onOpenChange={(open) => !open && setDeletingId(null)}
+        title="Remover campanha?"
+        description="Todo o histórico de discagem desta campanha será perdido."
+        destructive
+        onConfirm={() => {
+          if (deletingId) {
+            handleDelete(deletingId);
+            setDeletingId(null);
+          }
+        }}
+      />
     </AppShell>
   );
 }
