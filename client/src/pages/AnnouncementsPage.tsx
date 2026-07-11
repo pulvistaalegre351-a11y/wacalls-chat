@@ -23,7 +23,7 @@ import type { Announcement } from "@/services/announcements";
 import { useAuth } from "@/stores/auth";
 
 export default function AnnouncementsPage() {
-  const isAdmin = useAuth((s) => s.user?.role === "admin" || s.user?.role === "superadmin");
+  const isAdmin = useAuth((s) => !!s.user?.roles?.includes("admin") || !!s.user?.roles?.includes("superadmin"));
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
 
