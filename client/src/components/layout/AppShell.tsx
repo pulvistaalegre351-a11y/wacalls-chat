@@ -128,6 +128,7 @@ const AppShellInner = ({ children }: { children: ReactNode }) => {
     { to: "/contacts", icon: Contact2, label: t("nav.contacts", { defaultValue: "Contatos" }), perm: "chats" },
     { to: "/queues", icon: Users2, label: t("nav.queues", { defaultValue: "Filas" }), perm: "chats" },
     { to: "/flows", icon: Bot, label: t("nav.flows", { defaultValue: "FlowBuilder" }), perm: "chats" },
+    { to: "/campaigns", icon: PhoneCall, label: t("nav.dialer", { defaultValue: "Discador" }), perm: "chats" },
     { to: "/connections", icon: Wifi, label: t("nav.connections", { defaultValue: "Conexões" }), perm: "connections" },
     { to: "/reports", icon: BarChart3, label: t("nav.reports", { defaultValue: "Relatórios" }), perm: "chats" },
   ];
