@@ -20,7 +20,7 @@ func (s *server) handleListCampaigns(w http.ResponseWriter, r *http.Request) {
 	tenant := u.ID
 	if !u.IsSuperAdmin() {
 		// Use tenant logic if present, else just owner
-		tenant = u.TenantID
+		tenant = u.TenantID()
 		if tenant == "" {
 			tenant = u.ID
 		}

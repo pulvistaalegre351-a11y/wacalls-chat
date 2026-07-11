@@ -16,7 +16,7 @@ func (s *server) registerAnnouncementRoutes(mux *http.ServeMux) {
 
 func (s *server) handleListAnnouncements(w http.ResponseWriter, r *http.Request) {
 	u := currentUserFromReq(r)
-	tenant := u.TenantID
+	tenant := u.TenantID()
 	if tenant == "" {
 		tenant = u.ID
 	}
@@ -35,7 +35,7 @@ func (s *server) handleListAnnouncements(w http.ResponseWriter, r *http.Request)
 
 func (s *server) handleCreateAnnouncement(w http.ResponseWriter, r *http.Request) {
 	u := currentUserFromReq(r)
-	tenant := u.TenantID
+	tenant := u.TenantID()
 	if tenant == "" {
 		tenant = u.ID
 	}
@@ -67,7 +67,7 @@ func (s *server) handleCreateAnnouncement(w http.ResponseWriter, r *http.Request
 
 func (s *server) handleDeleteAnnouncement(w http.ResponseWriter, r *http.Request) {
 	u := currentUserFromReq(r)
-	tenant := u.TenantID
+	tenant := u.TenantID()
 	if tenant == "" {
 		tenant = u.ID
 	}

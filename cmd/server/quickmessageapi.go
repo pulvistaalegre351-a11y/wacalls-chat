@@ -16,7 +16,7 @@ func (s *server) registerQuickMessageRoutes(mux *http.ServeMux) {
 
 func (s *server) handleListQuickMessages(w http.ResponseWriter, r *http.Request) {
 	u := currentUserFromReq(r)
-	tenant := u.TenantID
+	tenant := u.TenantID()
 	if tenant == "" {
 		tenant = u.ID
 	}
@@ -31,7 +31,7 @@ func (s *server) handleListQuickMessages(w http.ResponseWriter, r *http.Request)
 
 func (s *server) handleCreateQuickMessage(w http.ResponseWriter, r *http.Request) {
 	u := currentUserFromReq(r)
-	tenant := u.TenantID
+	tenant := u.TenantID()
 	if tenant == "" {
 		tenant = u.ID
 	}
@@ -63,7 +63,7 @@ func (s *server) handleCreateQuickMessage(w http.ResponseWriter, r *http.Request
 
 func (s *server) handleDeleteQuickMessage(w http.ResponseWriter, r *http.Request) {
 	u := currentUserFromReq(r)
-	tenant := u.TenantID
+	tenant := u.TenantID()
 	if tenant == "" {
 		tenant = u.ID
 	}
