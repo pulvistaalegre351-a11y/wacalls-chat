@@ -30,8 +30,10 @@ type server struct {
 	sessStore  *sessionStore
 	chatMeta   *chatMetaStore
 	calls      *callStore
-	campaigns  *campaignStore
-	dialer     *campaignDialer
+	campaigns     *campaignStore
+	quickMessages *quickMessageStore
+	announcements *announcementStore
+	dialer        *campaignDialer
 	recSigner  *recordingSigner
 	settings   *settingsStore
 	db         *sql.DB
@@ -144,6 +146,14 @@ func newServer(ctx context.Context, dbPath, staticDir string, maxCalls int, log 
 	if err := campaigns.init(ctx); err != nil {
 		return nil, err
 	}
+	quickMsgs := newQuickMessageStore(db)
+	if err := quickMsgs.init(ctx); err != nil {
+		return nil, err
+	}
+	anns := newAnnouncementStore(db)
+	if err := anns.init(ctx); err != nil {
+		return nil, err
+	}
 	tags, err := newTagStore(ctx, db)
 	if err != nil {
 		return nil, err
@@ -207,8 +217,10 @@ func newServer(ctx context.Context, dbPath, staticDir string, maxCalls int, log 
 			hub.Revoke(t)
 		}
 	}
-	srv := &server{broker: broker, sessions: mgr, log: log, staticDir: staticDir, flows: flows, flowExec: exec, flowTracer: tracer, messages: messages, auth: auth, loginLimit: newLoginLimiter(), queues: queues, tags: tags,
+	srv := &server{broker: broker, sessions: mgr, log: log, staticDir: staticDir, flows: flows, flowExec: exec, flowTracer: tracer, messages: messages, auth: auth, loginLimit: newLoginLimiter(), queues: queues, tags:       tags,
 		campaigns:  campaigns,
+		quickMessages: quickMsgs,
+		announcements: anns,
 		kanban:     kanban,
 		sessStore:  store, chatMeta: chatMeta, calls: callStore, recSigner: signer, settings: settings, db: db, authStream: hub, cache: cch}
 	

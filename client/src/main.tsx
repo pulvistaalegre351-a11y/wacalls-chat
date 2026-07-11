@@ -12,6 +12,8 @@ import QueuesPage from "@/pages/QueuesPage";
 const FlowBuilderListPage = lazy(() => import("./pages/FlowBuilderListPage"));
 const FlowBuilderEditorPage = lazy(() => import("./pages/FlowBuilderEditorPage"));
 const CampaignsPage = lazy(() => import("./pages/CampaignsPage"));
+const QuickMessagesPage = lazy(() => import("./pages/QuickMessagesPage"));
+const AnnouncementsPage = lazy(() => import("./pages/AnnouncementsPage"));
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -49,6 +51,8 @@ const Root = () => {
               <Route path="/flows" element={<RequireAuth><FlowBuilderListPage /></RequireAuth>} />
               <Route path="/flows/:id" element={<RequireAuth><FlowBuilderEditorPage /></RequireAuth>} />
               <Route path="/campaigns" element={<RequireAuth><CampaignsPage /></RequireAuth>} />
+              <Route path="/quick-messages" element={<RequireAuth><QuickMessagesPage /></RequireAuth>} />
+              <Route path="/announcements" element={<RequireAuth><AnnouncementsPage /></RequireAuth>} />
               <Route path="/admin/users" element={<RequireAuth adminOnly><AdminUsersPage /></RequireAuth>} />
               <Route path="*" element={<Navigate to="/chats" replace />} />
             </Routes>
